@@ -50,10 +50,10 @@ userSchema.methods = {
     authenticate: async function(plainText) {
         try {
             const result = await bcrypt.compare(plainText, this.hashed_password);
-            console.log('Password comparison result:', result);
+            // console.log('Password comparison result:', result);
             return result;
         } catch (err) {
-            console.error('Error comparing passwords:', err);
+            // console.error('Error comparing passwords:', err);
             return false;
         }
     },

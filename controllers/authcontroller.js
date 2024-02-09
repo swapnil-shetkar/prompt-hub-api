@@ -22,23 +22,27 @@ exports.signup = async (req, res) => {
 
 exports.signin = async (req, res) => {
   const { email, password } = req.body;
-
+  if (!email || !password) {
+    return res.status(400).json({
+      error: "Email and password are required",
+    });
+  }
   try {
     const user = await User.findOne({ email });
-    const isAuthenticated = await user.authenticate(password);
 
     if (!user) {
       return res.status(400).json({
         error: "User with that email does not exist. Please sign up",
       });
     }
+    
+    const isAuthenticated = await user.authenticate(password);
 
     if (!isAuthenticated) {
       return res.status(401).json({
         error: "Email and password do not match",
       });
     }
-
     const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
     res.cookie('t', token, { expire: new Date() + 9999 });
     const { _id, name, role } = user;
@@ -58,8 +62,8 @@ exports.signout = async (req , res) => {
 };
 
 exports.authenticateToken = expressjwt({
-  secret: process.env.JWT_SECRET, // Replace with your actual JWT secret from the environment variable
-  algorithms: ['HS256'], // Specify the algorithm used to sign the token
+  secret: process.env.JWT_SECRET, 
+  algorithms: ['HS256'], 
   userProperty: 'auth'
 });
 
